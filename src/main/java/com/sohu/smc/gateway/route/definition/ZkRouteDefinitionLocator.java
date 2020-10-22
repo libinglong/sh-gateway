@@ -25,7 +25,7 @@ public class ZkRouteDefinitionLocator implements RouteDefinitionLocator, Applica
 
     private ApplicationContext applicationContext;
 
-    private static final String ROUTE_CONFIG_KEY = "smc.gateway.route.config" ;
+    private static final String ROUTE_CONFIG_KEY = "${smc.gateway.route.config}" ;
 
     private YAMLMapper yamlMapper = new YAMLMapper();
 
@@ -37,9 +37,12 @@ public class ZkRouteDefinitionLocator implements RouteDefinitionLocator, Applica
     }
 
     @Value(ROUTE_CONFIG_KEY)
-    public void setConfigStr(String config) throws JsonProcessingException {
+    public void setConfig(String config) throws JsonProcessingException {
         routeDefinitions = yamlMapper.readValue(config, new TypeReference<>(){});
-        applicationContext.publishEvent(new RefreshRoutesEvent(config));
+        if (applicationContext != null){
+            applicationContext.publishEvent(new RefreshRoutesEvent(config));
+        }
+
     }
 
     @Override
