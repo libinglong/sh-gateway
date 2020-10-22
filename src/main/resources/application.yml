@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: rewritepath_route
+          uri: https://tieba.baidu.com
+          predicates:
+            - Path=/a/p/**
+          filters:
+            - RewritePath=/a(?<segment>/?.*), $\{segment}
+        - id: after_route
+          uri: https://example.org
+          predicates:
+            - After=2017-01-20T17:42:47.789-07:00[America/Denver]
+
+#              https://tieba.baidu.com/p/7029282277

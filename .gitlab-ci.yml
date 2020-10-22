@@ -1,0 +1,60 @@
+stages:
+  - package
+  - build
+  - deploy
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  JAVA_OPTS_COMMON: "-Xmx512M -Xms512M -XX:+UseConcMarkSweepGC -XX:NativeMemoryTracking=summary -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses -XX:+CMSClassUnloadingEnabled -XX:+ParallelRefProcEnabled -XX:+CMSScavengeBeforeRemark -XX:MaxMetaspaceSize=1024M -XX:MetaspaceSize=50M"
+  JAVA_OPTS1: "-Ddata_center=bx -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7003"
+  JAVA_OPTS2: "-Ddata_center=yz -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7004"
+  APP_NAME1: config1
+  APP_NAME2: config2
+  image_latest: config-server:latest
+  image_name: config-server:$CI_BUILD_REF
+
+mvn:package:
+  stage: package
+  tags:
+    - config-server
+  image: maven:3.6.3-openjdk-11
+  #缓存mvn库
+  cache:
+    key: mvn_repo
+    paths:
+      - .m2/repository
+  artifacts:
+    paths:
+    - target/app.jar
+  script:
+    - mvn package -Dmaven.test.skip=true --settings $CI_PROJECT_DIR/conf/settings.xml
+
+docker:build:
+  stage: build
+  tags:
+    - config-server
+  image: docker:19.03.1
+#  before_script:
+    #登录到gitlab集成的注册表
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - export
+    # 最后的"."表示当前目录
+#    低版本不支持 https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+#    - docker build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker build --tag $image_name --tag $image_latest .
+    #推送到gitlab集成的注册表
+#    - docker push $CI_REGISTRY_IMAGE:latest
+
+docker:deploy:
+  stage: deploy
+  tags:
+    - config-server
+  image: docker:19.03.1
+  script:
+    - docker container stop $APP_NAME1 || true
+    - docker container rm $APP_NAME1 || true
+    - docker run -m 512M -d --network=host --restart=always --name=$APP_NAME1 -e JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS1" $image_name
+    - docker container stop $APP_NAME2 || true
+    - docker container rm $APP_NAME2 || true
+    - docker run -m 512M -d --network=host --restart=always --name=$APP_NAME2 -e JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS2" $image_name
