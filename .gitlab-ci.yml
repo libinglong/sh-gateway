@@ -1,3 +1,4 @@
+# 该脚本用于gitlab的pipeline,如果不适用pipeline的话,可以忽略.
 stages:
   - package
   - build
