@@ -26,7 +26,6 @@ mvn:package:
     paths:
     - target/app.jar
   script:
-    - ifconfig
     - mvn package -Dmaven.test.skip=true --settings $CI_PROJECT_DIR/conf/settings.xml
 
 docker:build:
