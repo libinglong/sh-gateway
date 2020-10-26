@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="true"
+               xmlns="http://ch.qos.logback/xml/ns/logback"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://ch.qos.logback/xml/ns/logback https://raw.githubusercontent.com/libinglong/logback-XSD/master/src/main/xsd/logback.xsd">
+
+    <property name="logPath" value="/opt/logs"/>
+
+    <appender name="timeRolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/app.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/app.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <charset>UTF-8</charset>
+            <layout class="ch.qos.logback.classic.PatternLayout">
+<!--            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">-->
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [%t] %c{0}.%M\(%c{0}.java:%L\) - %msg %X{tid} %X{##traceId}%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender name="errorRolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/app.err</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/app.err.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <charset>UTF-8</charset>
+            <layout class="ch.qos.logback.classic.PatternLayout">
+<!--            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">-->
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} |-%-5level [%t] %c{0}.%M\(%c{0}.java:%L\) - %msg %X{tid} %X{##traceId}%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+
+    <root level="info">
+        <appender-ref ref="timeRolling"/>
+        <appender-ref ref="errorRolling"/>
+    </root>
+
+</configuration>
