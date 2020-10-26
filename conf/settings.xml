@@ -16,18 +16,6 @@
       <username>maoyingli</username>
       <password>123456</password>
     </server>
-
-    <server>
-      <id>releases</id>
-      <username>maoyingli</username>
-      <password>123456</password>
-    </server>
-
-    <server>
-      <id>snapshots</id>
-      <username>maoyingli</username>
-      <password>123456</password>
-    </server>
   </servers>
 
   <mirrors>
@@ -40,8 +28,33 @@
     <mirror>
       <id>nexus-snapshots</id>
       <url>http://svn.k.sohu.com/nexus/content/groups/snapshot</url>
-      <mirrorOf>nexus-snapshots</mirrorOf>
+      <mirrorOf>dp-nexus-snapshots</mirrorOf>
     </mirror>
   </mirrors>
+  <profiles>
+    <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+          <id>dp-nexus-snapshots</id>
+          <name>dp-nexus-snapshots</name>
+          <url>http://svn.k.sohu.com/nexus/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>dp-nexus-releases</id>
+          <name>dp-nexus-releases</name>
+          <url>http://svn.k.sohu.com/nexus/content/repositories/releases</url>
+        </repository>
+    </repositories>
+    </profile>
+  </profiles>
 
 </settings>
