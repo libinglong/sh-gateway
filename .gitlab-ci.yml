@@ -30,7 +30,7 @@ mvn:package:
 
 
 services:
-  - name: docker:dind
+  - name: docker:19.03.1
     command: ["--insecure-registry=10.16.12.206"]
 
 
