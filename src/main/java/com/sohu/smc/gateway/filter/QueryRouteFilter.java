@@ -30,7 +30,13 @@ public class QueryRouteFilter implements GlobalFilter, Ordered {
                 .containsKey(PARAM_NAME);
         if (queryForRoute){
             Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
-            byte[] bytes = route.getId().getBytes();
+            String routeInfo;
+            if (route == null){
+                routeInfo = "no route found";
+            } else {
+                routeInfo = route.toString();
+            }
+            byte[] bytes = routeInfo.getBytes();
             DataBuffer wrap = exchange.getResponse().bufferFactory().wrap(bytes);
             return exchange.getResponse()
                     .writeWith(Mono.just(wrap));
