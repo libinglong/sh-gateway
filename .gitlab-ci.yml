@@ -34,7 +34,8 @@ docker:build:
   stage: build
   tags:
     - smc-gateway
-  image: 10.16.12.204/smc-gateway/local-docker:1.0
+  image: docker:19.03.1
+#  image: 10.16.12.204/smc-gateway/local-docker:1.0
 #  before_script:
     #登录到gitlab集成的注册表
 #    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
