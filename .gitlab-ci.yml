@@ -29,11 +29,6 @@ mvn:package:
     - mvn package -Dmaven.test.skip=true --settings $CI_PROJECT_DIR/conf/settings.xml -U
 
 
-services:
-  - name: docker:19.03.1
-    command: ["--insecure-registry=10.16.12.206"]
-
-
 docker:build:
   stage: build
   tags:
