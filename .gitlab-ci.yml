@@ -11,7 +11,7 @@ variables:
   docker_server: 10.16.12.204
   image_latest: 10.16.12.204/smc-gateway/smc-gateway:latest
   image_name: 10.16.12.204/smc-gateway/smc-gateway:$CI_BUILD_REF
-#  如果拉取的镜像来源是私服,则需要加权限认证
+#  使用docker执行构建,如果拉取的镜像来源是私服,则需要加权限认证
 #  DOCKER_AUTH_CONFIG: "{\"auths\":{\"10.16.12.204\":{\"auth\":\"YmluZ2xvbmdsaTpMaWJpbmdsb25nMTIz\"}}}"
 
 mvn:package:
@@ -38,6 +38,7 @@ docker:build:
   image: docker:19.03.1
 #  image: 10.16.12.204/smc-gateway/local-docker:1.0
   before_script:
+#    由于和宿主机共用一个docker的server端,宿主机需要配置insecure-registries,开启http支持
     - docker login -u binglongli -p Libinglong123 ${docker_server}
   script:
 #    - export
