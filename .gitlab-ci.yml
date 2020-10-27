@@ -44,7 +44,8 @@ docker:build:
     # 最后的"."表示当前目录
 #    低版本不支持 https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
 #    - docker build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
-    - docker login -u binglongli -p Libinglong123 ${docker_server}
+#    由于和宿主机用一个docker,因此不需要再次登录了
+#    - docker login -u binglongli -p Libinglong123 ${docker_server}
     - docker build --tag $image_name --tag $image_latest .
     #推送到gitlab集成的注册表
     - docker push ${image_latest}
