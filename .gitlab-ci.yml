@@ -11,6 +11,7 @@ variables:
   docker_server: 10.16.12.204
   image_latest: 10.16.12.204/smc-gateway/smc-gateway:latest
   image_name: 10.16.12.204/smc-gateway/smc-gateway:$CI_BUILD_REF
+  DOCKER_AUTH_CONFIG: {"auths":{"10.16.12.204":{"auth":"YmluZ2xvbmdsaTpMaWJpbmdsb25nMTIz"}}}
 
 mvn:package:
   stage: package
