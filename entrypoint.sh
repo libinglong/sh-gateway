@@ -30,4 +30,5 @@ JAVA_OPTS="
 # shellcheck disable=SC2086
 # tee表示往文件中存一份日志的同时也输出至stdout
 # https://unix.stackexchange.com/questions/145651/using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time
+# 这里如果用exec java ${JAVA_OPTS} -jar app.jar | tee ${log_home}/stdout.log,无法接受docker stop发出的信号
 exec java ${JAVA_OPTS} -jar app.jar &> >(tee ${log_home}/stdout.log)
