@@ -14,4 +14,4 @@ JAVA_OPTS="
 -Xlog:safepoint,classhisto*=trace,age*,gc*=info:file=${log_home}/gc-%t.log:time,tid,tags:filecount=5,filesize=50m
 "
 # shellcheck disable=SC2086
-exec java ${JAVA_OPTS} -jar app.jar
+exec java ${JAVA_OPTS} -jar app.jar >/opt/logs/stdout.log 2>&1
