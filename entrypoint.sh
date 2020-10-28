@@ -5,6 +5,17 @@
 set -e
 log_home=/opt/logs
 mkdir -p ${log_home}
+# shellcheck disable=SC2154
+if [[ "${data_center}" == "bx" ]]
+then
+  opa_server="10.16.13.222:11800,10.16.13.223:11800"
+elif [[ "${data_center}" == "yz" ]]
+then
+  opa_server="10.18.75.162:11800,10.18.74.94:11800"
+else
+  echo env data_center must be bx or yz
+  exit;
+fi
 JAVA_OPTS="
 -Xms2G -Xmx2G -server
 -XX:+HeapDumpOnOutOfMemoryError
@@ -12,7 +23,11 @@ JAVA_OPTS="
 -XX:+DisableExplicitGC
 -XX:+UnlockExperimentalVMOptions -XX:+UseZGC
 -Xlog:safepoint,classhisto*=trace,age*,gc*=info:file=${log_home}/gc-%t.log:time,tid,tags:filecount=5,filesize=50m
+-javaagent:/skywalking-agent-for-docker/skywalking-agent.jar
+-Dskywalking.agent.service_name=smc-gateway
+-Dskywalking.collector.backend_service=${opa_server}
 "
 # shellcheck disable=SC2086
 # tee表示往文件中存一份日志的同时也输出至stdout
-exec java ${JAVA_OPTS} -jar app.jar 2>&1 | tee /opt/logs/stdout.log
+# https://unix.stackexchange.com/questions/145651/using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time
+exec java ${JAVA_OPTS} -jar app.jar &> >(tee ${log_home}/stdout.log)

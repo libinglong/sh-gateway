@@ -1,0 +1,3 @@
+[submodule "skywalking-agent-for-docker"]
+	path = skywalking-agent-for-docker
+	url = http://ops.mrd.sohuno.com/gitlab/binglongli217932/skywalking-agent-for-docker.git
