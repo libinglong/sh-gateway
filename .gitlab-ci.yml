@@ -15,6 +15,7 @@ variables:
 #  使用docker执行构建,如果拉取的镜像来源是私服,则需要加权限认证
 #  DOCKER_AUTH_CONFIG: "{\"auths\":{\"10.16.12.204\":{\"auth\":\"YmluZ2xvbmdsaTpMaWJpbmdsb25nMTIz\"}}}"
 cache:
+  key: key-for-all
   paths:
     - .m2/repository
     - .sonar/cache
