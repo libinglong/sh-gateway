@@ -15,7 +15,7 @@ variables:
 #  使用docker执行构建,如果拉取的镜像来源是私服,则需要加权限认证
 #  DOCKER_AUTH_CONFIG: "{\"auths\":{\"10.16.12.204\":{\"auth\":\"YmluZ2xvbmdsaTpMaWJpbmdsb25nMTIz\"}}}"
 cache:
-  key: key-for-all-path
+  key: key-for-all-1
   paths:
     - .m2/repository
     - .sonar/cache
@@ -40,7 +40,7 @@ sonarqube-check:
 #    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
     SONAR_HOST_URL: http://10.16.12.206:30240
   script:
-    - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
+    - mvn verify sonar:sonar -Dsonar.qualitygate.wait=true --settings $CI_PROJECT_DIR/conf/settings.xml
   allow_failure: true
   only:
     - merge_requests
