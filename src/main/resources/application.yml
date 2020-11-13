@@ -15,7 +15,7 @@
 
 #              https://tieba.baidu.com/p/7029282277
 #              http://localhost:8080/a/p/7029282277
-debug: true
+#debug: true
 spring:
   main:
     allow-bean-definition-overriding: true

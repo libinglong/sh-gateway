@@ -23,6 +23,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.sohu.smc</groupId>
             <artifactId>smc-usercenter-ds-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>

@@ -1,4 +1,4 @@
-package com.sohu.smc.gateway.config.dubbo;
+package com.sohu.smc.gateway.config;
 
 import com.sohu.smc.usercenter.ds.model.userinfo.UserBaseInfoDTO;
 import com.sohu.smc.usercenter.ds.service.userinfo.UserBaseService;
