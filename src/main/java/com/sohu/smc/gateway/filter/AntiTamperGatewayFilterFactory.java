@@ -1,6 +1,5 @@
 package com.sohu.smc.gateway.filter;
 
-import com.sohu.smc.gateway.util.ByteArrayUtils;
 import lombok.Data;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -15,6 +14,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import reactor.core.publisher.Mono;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,10 +86,7 @@ public class AntiTamperGatewayFilterFactory extends AbstractGatewayFilterFactory
             return Mono.empty();
         }
         return DataBufferUtils.join(request.getBody(), 256 * 1024)
-                .map(dataBuffer -> {
-                    byte[] combine = ByteArrayUtils.combine(dataBuffer.asByteBuffer().array(), config.salt.getBytes());
-                    return DigestUtils.md5DigestAsHex(combine);
-                })
+                .map(dataBuffer -> getMd5(dataBuffer, config))
                 .map(md5 -> {
                     if (!tamperHeader.equals(md5)){
                         throw new RuntimeException("illegal tamper header");
@@ -95,6 +94,18 @@ public class AntiTamperGatewayFilterFactory extends AbstractGatewayFilterFactory
                     return "OK";
                 })
                 .then();
+    }
+
+    private String getMd5(DataBuffer dataBuffer, Config config){
+        try{
+            InputStream bodyInputStream = dataBuffer.asInputStream();
+            ByteArrayInputStream saltInputStream = new ByteArrayInputStream(config.salt.getBytes());
+            return DigestUtils.md5DigestAsHex(new SequenceInputStream(bodyInputStream, saltInputStream));
+        } catch (Exception e){
+            throw new RuntimeException("get md5 error", e);
+        } finally {
+            DataBufferUtils.release(dataBuffer);
+        }
     }
 
 
