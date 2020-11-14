@@ -16,8 +16,8 @@ import java.util.List;
  * <a href="mailto:libinglong9@gmail.com">libinglong:libinglong9@gmail.com</a>
  * @since 2020/11/9
  */
-@Configuration
-@EnableDubbo(scanBasePackages = "com.sohu.smc.usercenter.ds.service.userinfo")
+//@Configuration
+//@EnableDubbo(scanBasePackages = "com.sohu.smc.usercenter.ds.service.userinfo")
 @PropertySource("classpath:dubbo-consumer.properties")
 public class DubboConsumerConfig implements CommandLineRunner {
 

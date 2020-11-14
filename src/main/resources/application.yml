@@ -1,4 +1,4 @@
-#spring:
+spring:
 #  cloud:
 #    gateway:
 #      routes:
@@ -8,14 +8,14 @@
 #            - Path=/a/p/**
 #          filters:
 #            - RewritePath=/a(?<segment>/?.*), $\{segment}
-#        - id: after_route
-#          uri: https://example.org
+#        - id: anti_tamper
+#          uri: http://localhost:8081
 #          predicates:
-#            - After=2017-01-20T17:42:47.789-07:00[America/Denver]
+#            - Path=/a/b/**
+#          filters:
+#            - RewritePath=/a(?<segment>/?.*), $\{segment}
+#            - AntiTamper=x-tamper,adbfzfa
 
-#              https://tieba.baidu.com/p/7029282277
-#              http://localhost:8080/a/p/7029282277
-#debug: true
-spring:
+
   main:
     allow-bean-definition-overriding: true
