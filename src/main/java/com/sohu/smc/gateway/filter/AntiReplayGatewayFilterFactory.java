@@ -1,6 +1,8 @@
 package com.sohu.smc.gateway.filter;
 
+import com.sohu.smc.gateway.util.ThreadContext;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisException;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import lombok.Data;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -13,8 +15,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author binglongli217932
@@ -24,14 +30,22 @@ import java.util.List;
 @Component
 public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory<AntiReplayGatewayFilterFactory.Config> {
 
-    RedisAsyncCommands<String, String> async;
+    private volatile RedisAsyncCommands<String, String> currentCmd;
+
+    private final AtomicInteger atomicInteger = new AtomicInteger();
+
+    @SuppressWarnings("unchecked")
+    private final RedisAsyncCommands<String, String>[] cmds = new RedisAsyncCommands[2];
 
     private static final String PREFIX = "anti_replay::";
 
-    public AntiReplayGatewayFilterFactory(RedisClient redisClient){
+    public AntiReplayGatewayFilterFactory(RedisClient primaryRedisClient, RedisClient secondaryRedisClient){
         super(Config.class);
-        async = redisClient.connect()
+        cmds[0] = primaryRedisClient.connect()
                 .async();
+        cmds[1] = secondaryRedisClient.connect()
+                .async();
+        currentCmd = cmds[0];
     }
 
     @Override
@@ -91,12 +105,12 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
         if (!md5.equals(md5FromHttp)){
             return Mono.error(new Exception("illegal replayId"));
         }
-        return Mono.fromCompletionStage(async.exists(PREFIX + replayHeader))
+        return Mono.fromCompletionStage(exist(replayHeader))
                 .flatMap(ret -> {
-                    if (ret == 1) {
+                    if (ret.equals(1)) {
                         return Mono.error(new RuntimeException("you can not replay the request"));
                     }
-                    return Mono.fromCompletionStage(async.psetex(PREFIX + replayHeader, config.expireTimeInMilliSecond, ""))
+                    return Mono.fromCompletionStage(psetex(replayHeader, config))
                             .map(setRet -> {
                                 if (!"OK".equals(setRet)) {
                                     throw new RuntimeException("replay store failed");
@@ -115,5 +129,43 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
         private Long expireTimeInMilliSecond;
 
     }
+
+    private CompletionStage<?> exist(String replayHeader){
+        try {
+            return currentCmd.exists(PREFIX + replayHeader);
+        } catch (RedisException e){
+            return process(e);
+        }
+    }
+
+    private CompletionStage<?> psetex(String replayHeader, Config config){
+        try {
+            return currentCmd.psetex(PREFIX + replayHeader, config.expireTimeInMilliSecond, "");
+        } catch (RedisException e){
+            return process(e);
+        }
+    }
+
+    /**
+     * 如果10s内出现20次异常,则切换redis
+     * @param e RedisException
+     * @return CompletionStage
+     */
+    private CompletionStage<Object> process(RedisException e){
+        long now = System.currentTimeMillis();
+        ArrayList<Long> list = ThreadContext.getList();
+        list.add(now);
+        if (list.size() == 20){
+            if (list.get(0) + 10_000 > now){
+                int i = atomicInteger.incrementAndGet() % 2;
+                currentCmd = cmds[i];
+            }
+            list.remove(0);
+        }
+        return CompletableFuture.failedStage(e);
+    }
+
+
+
 
 }
