@@ -15,10 +15,24 @@ import org.springframework.context.annotation.Configuration;
 public class RedisConfig {
 
     @Bean
-    public RedisClient redisClient(){
+    public RedisClient primaryRedisClient(){
         RedisURI localhost = RedisURI.builder()
                 .withHost("localhost")
                 .withPort(6379)
+                .build();
+        RedisClient redisClient = RedisClient.create(localhost);
+        ClientOptions options = ClientOptions.builder()
+                .disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+                .build();
+        redisClient.setOptions(options);
+        return redisClient;
+    }
+
+    @Bean
+    public RedisClient secondaryRedisClient(){
+        RedisURI localhost = RedisURI.builder()
+                .withHost("localhost")
+                .withPort(6380)
                 .build();
         RedisClient redisClient = RedisClient.create(localhost);
         ClientOptions options = ClientOptions.builder()

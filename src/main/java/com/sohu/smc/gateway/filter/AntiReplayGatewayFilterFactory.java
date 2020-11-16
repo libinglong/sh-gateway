@@ -1,6 +1,5 @@
 package com.sohu.smc.gateway.filter;
 
-import com.sohu.smc.gateway.util.ThreadContext;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisException;
 import io.lettuce.core.api.async.RedisAsyncCommands;
@@ -15,11 +14,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -38,6 +38,8 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
     private final RedisAsyncCommands<String, String>[] cmds = new RedisAsyncCommands[2];
 
     private static final String PREFIX = "anti_replay::";
+
+    private static final Set<Long> record = ConcurrentHashMap.newKeySet();
 
     public AntiReplayGatewayFilterFactory(RedisClient primaryRedisClient, RedisClient secondaryRedisClient){
         super(Config.class);
@@ -107,7 +109,7 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
         }
         return Mono.fromCompletionStage(exist(replayHeader))
                 .flatMap(ret -> {
-                    if (ret.equals(1)) {
+                    if (ret.equals(1L)) {
                         return Mono.error(new RuntimeException("you can not replay the request"));
                     }
                     return Mono.fromCompletionStage(psetex(replayHeader, config))
@@ -153,14 +155,14 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
      */
     private CompletionStage<Object> process(RedisException e){
         long now = System.currentTimeMillis();
-        ArrayList<Long> list = ThreadContext.getList();
-        list.add(now);
-        if (list.size() == 20){
-            if (list.get(0) + 10_000 > now){
-                int i = atomicInteger.incrementAndGet() % 2;
-                currentCmd = cmds[i];
+        record.add(now);
+        if (record.size() == 20){
+            boolean anyMatch = record.stream()
+                    .anyMatch(time -> time + 10_000 > now);
+            if (anyMatch){
+                currentCmd = cmds[atomicInteger.incrementAndGet() % 2];
             }
-            list.remove(0);
+            record.clear();
         }
         return CompletableFuture.failedStage(e);
     }
