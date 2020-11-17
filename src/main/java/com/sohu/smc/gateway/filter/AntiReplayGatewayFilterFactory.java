@@ -1,8 +1,8 @@
 package com.sohu.smc.gateway.filter;
 
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisException;
-import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
 import lombok.Data;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -30,18 +30,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory<AntiReplayGatewayFilterFactory.Config> {
 
-    private volatile RedisAsyncCommands<String, String> currentCmd;
+    private volatile RedisAdvancedClusterAsyncCommands<String, String> currentCmd;
 
     private final AtomicInteger atomicInteger = new AtomicInteger();
 
     @SuppressWarnings("unchecked")
-    private final RedisAsyncCommands<String, String>[] cmds = new RedisAsyncCommands[2];
+    private final RedisAdvancedClusterAsyncCommands<String, String>[] cmds = new RedisAdvancedClusterAsyncCommands[2];
 
     private static final String PREFIX = "anti_replay::";
 
     private static final Set<Long> record = ConcurrentHashMap.newKeySet();
 
-    public AntiReplayGatewayFilterFactory(RedisClient primaryRedisClient, RedisClient secondaryRedisClient){
+    public AntiReplayGatewayFilterFactory(RedisClusterClient primaryRedisClient, RedisClusterClient secondaryRedisClient){
         super(Config.class);
         cmds[0] = primaryRedisClient.connect()
                 .async();
