@@ -102,7 +102,7 @@ spring:
 
 * 防篡改过滤器 AntiTamperGatewayFilterFactory
 
-  在filters中添加`- AntiTamper=x-tamper,adbfzfa`，可实现防篡改功能，例如
+  在filters中添加`- AntiTamper=x-tamper,foo`，可实现防篡改功能，例如
 
   ```yaml
   - id: anti_tamper
@@ -125,6 +125,22 @@ spring:
 * 查询路由过滤器 QueryRouteFilter 全局过滤器 无需配置
 
   在url中传递queryForRoute参数，那么本次请求不会路由到任何服务，并且将匹配到的路由规则作为json返回。
+
+* 认证过滤器(插件需求专用) AuthGatewayFilterFactory
+
+  在filters中添加`- Auth=`，可实现认证功能
+
+  ```yaml
+  - id: authxxx
+    uri: http://localhost:8081
+    predicates:
+      - Path=/a/b/**
+    filters:
+      - RewritePath=/a(?<segment>/?.*), $\{segment}
+      - Auth=x-auth,http://foo/bar
+  ```
+
+  //todo 等前端确定参数位置，完成剩余文档。
 
 
 
