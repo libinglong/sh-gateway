@@ -108,17 +108,18 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
             return Mono.error(new Exception("illegal replayId"));
         }
         return Mono.fromCompletionStage(exist(replayHeader))
-                .flatMap(ret -> {
-                    if (ret.equals(1L)) {
-                        return Mono.error(new RuntimeException("you can not replay the request"));
+                .map(existRet -> {
+                    if (existRet.equals(1L)) {
+                        throw new RuntimeException("you can not replay the request");
                     }
-                    return Mono.fromCompletionStage(psetex(replayHeader, config))
-                            .map(setRet -> {
-                                if (!"OK".equals(setRet)) {
-                                    throw new RuntimeException("replay store failed");
-                                }
-                                return setRet;
-                            });
+                    return existRet;
+                })
+                .then(Mono.fromCompletionStage(psetex(replayHeader, config)))
+                .map(setRet -> {
+                    if (!"OK".equals(setRet)) {
+                        throw new RuntimeException("replay store failed");
+                    }
+                    return setRet;
                 })
                 .then();
     }
@@ -132,7 +133,7 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
 
     }
 
-    private CompletionStage<?> exist(String replayHeader){
+    private CompletionStage<Long> exist(String replayHeader){
         try {
             return currentCmd.exists(PREFIX + replayHeader);
         } catch (RedisException e){
@@ -140,7 +141,7 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
         }
     }
 
-    private CompletionStage<?> psetex(String replayHeader, Config config){
+    private CompletionStage<String> psetex(String replayHeader, Config config){
         try {
             return currentCmd.psetex(PREFIX + replayHeader, config.expireTimeInMilliSecond, "");
         } catch (RedisException e){
@@ -153,7 +154,7 @@ public class AntiReplayGatewayFilterFactory extends AbstractGatewayFilterFactory
      * @param e RedisException
      * @return CompletionStage
      */
-    private CompletionStage<Object> process(RedisException e){
+    private <T> CompletionStage<T> process(RedisException e){
         long now = System.currentTimeMillis();
         record.add(now);
         if (record.size() == 20){
