@@ -122,7 +122,7 @@ spring:
 
   收集一些信息，在grafana展示
 
-* 获取路由过滤器 QueryRouteFilter
+* 查询路由过滤器 QueryRouteFilter 全局过滤器 无需配置
 
   在url中传递queryForRoute参数，那么本次请求不会路由到任何服务，并且将匹配到的路由规则作为json返回。
 
