@@ -3,6 +3,7 @@ package com.sohu.smc.gateway.route.definition;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.sohu.mrd.framework.zk.propertysource.anno.AutoUpdate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.route.RouteDefinition;
@@ -36,6 +37,7 @@ public class ZkRouteDefinitionLocator implements RouteDefinitionLocator, Applica
     }
 
     @Value(ROUTE_CONFIG_KEY)
+    @AutoUpdate
     public void setConfig(String config) throws JsonProcessingException {
         routeDefinitions = yamlMapper.readValue(config, new TypeReference<>(){});
         if (applicationContext != null){
