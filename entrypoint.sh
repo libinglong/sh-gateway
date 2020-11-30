@@ -32,4 +32,5 @@ JAVA_OPTS="
 # tee表示往文件中存一份日志的同时也输出至stdout
 # https://unix.stackexchange.com/questions/145651/using-exec-and-tee-to-redirect-logs-to-stdout-and-a-log-file-in-the-same-time
 # 这里如果用exec java ${JAVA_OPTS} -jar app.jar | tee ${log_home}/stdout.log,无法接受docker stop发出的信号
-exec java ${JAVA_OPTS} -jar app.jar &> >(tee ${log_home}/stdout.log)
+# 为方便查看日志,往app.log中放一份.但可能无法跟随logback的滚动策略,即滚动时app.log会有个重命名操作,输出不会切换至新的app.log
+exec java ${JAVA_OPTS} -jar app.jar &> >(tee ${log_home}/stdout.log ${log_home}/app.log)
