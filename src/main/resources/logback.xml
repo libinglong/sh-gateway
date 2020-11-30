@@ -4,7 +4,7 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://ch.qos.logback/xml/ns/logback https://raw.githubusercontent.com/libinglong/logback-XSD/master/src/main/xsd/logback.xsd">
 
-    <property name="logPath" value="/opt/logs"/>
+    <property name="logPath" value="/opt/mrdapp/docker/gateway-preonline/logs"/>
 
     <appender name="timeRolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}/app.log</file>
