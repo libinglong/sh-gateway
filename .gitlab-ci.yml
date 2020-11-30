@@ -5,8 +5,11 @@ stages:
   - build
 #  - deploy
 
+before_script:
+  - git submodule sync --recursive
+  - git submodule update --init --recursive
+
 variables:
-  GIT_SUBMODULE_STRATEGY: recursive
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 #  JAVA_OPTS1: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7003"
 #  JAVA_OPTS2: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7004"
