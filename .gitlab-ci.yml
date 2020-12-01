@@ -55,7 +55,7 @@ docker:build:
   stage: build
   tags:
     - smc-gateway
-  image: harbor.mrd.sohuno.com/library/docker:19.03.1
+  image: harbor.mrd.sohuno.com/library/docker-credit:19.03.13
 #  image: 10.16.12.204/smc-gateway/local-docker:1.0
   before_script:
 #    由于和宿主机共用一个docker的server端,宿主机需要配置insecure-registries,开启http支持
