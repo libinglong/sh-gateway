@@ -13,9 +13,9 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 #  JAVA_OPTS1: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7003"
 #  JAVA_OPTS2: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7004"
-  docker_server: 10.16.12.204
-  image_latest: 10.16.12.204/smc-gateway/smc-gateway:latest
-  image_name: 10.16.12.204/smc-gateway/smc-gateway:$CI_BUILD_REF
+  docker_server: harbor.mrd.sohuno.com
+  image_latest: harbor.mrd.sohuno.com/smc-gateway/smc-gateway:latest
+  image_name: harbor.mrd.sohuno.com/smc-gateway/smc-gateway:$CI_BUILD_REF
 #  使用docker执行构建,如果拉取的镜像来源是私服,则需要加权限认证
 #  DOCKER_AUTH_CONFIG: "{\"auths\":{\"10.16.12.204\":{\"auth\":\"YmluZ2xvbmdsaTpMaWJpbmdsb25nMTIz\"}}}"
 cache:
@@ -59,7 +59,7 @@ docker:build:
 #  image: 10.16.12.204/smc-gateway/local-docker:1.0
   before_script:
 #    由于和宿主机共用一个docker的server端,宿主机需要配置insecure-registries,开启http支持
-    - docker login -u binglongli -p Libinglong123 ${docker_server}
+    - docker login -u 'robot$smc' -p 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE5MjIxNzcwMzAsImlhdCI6MTYwNjgxNzAzMCwiaXNzIjoiaGFyYm9yLXRva2VuLWRlZmF1bHRJc3N1ZXIiLCJpZCI6MywicGlkIjozLCJhY2Nlc3MiOlt7IlJlc291cmNlIjoiL3Byb2plY3QvMy9yZXBvc2l0b3J5IiwiQWN0aW9uIjoicHVzaCIsIkVmZmVjdCI6IiJ9XX0.UVD2kg5xX00vfWxxAVOxRfFYRAF06g7TiLTNKE3-jtGgurBi4Vht_3taF7bwnmFNVotSkb08K3VI1ANKDh-SiRRaqs6lKRl_FlJ-IKDoRk9uVL-gMzy_IFkX5tFlwgQA69TrqzUGpVjBLX_K9qhXqf8q3MZezinQ1mKLpt2wdC_sAuFPsjInP4GNEAVtPpHYXey32uBsm-vL-AiflM0AoNqjEfV6wKQzobIAAGVB3M57vmueJChoU7RSd0CAjeERqTCQiww4Jz2RAQiy-EXOSbioyTWi6vQtysZTr1dYTyxhFkVTzgDk4goJVqBcYOvt-Q54rgwKmiIlv0BDOJBMC4lHS3iC2NUN28gZPGAQpwKwasnRvcAi0pWNunn5-Rf_NlVWbyMuEOiJore9YjnmxCNQucI3VplMZLz0v0lVJnPHZ6KQ5Mfyizu4HiMiekyUncWNzVvEUJAU6EXMWCGeyyTbO9SoQOwvkb2eZD0Gy7WB-qiByXb2FaJTjfth1QDgs6SBh9IqQRIzWk1uufAQQe68-iXxYeIPVkZZ3NCN_UPL6nbdvsX0u3ux22ixwkb_XjtMBvHD_tHaUaq8_KdRbeTmI8he6qPaYBAjpPNH4f96QWupsQSdskYxEhiz9gFAZAY-mYghDJ4yxeVxoBa_yL2iqu6DICZPQojUHYEFWDE' ${docker_server}
   script:
 #    - export
 #    低版本不支持 https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
