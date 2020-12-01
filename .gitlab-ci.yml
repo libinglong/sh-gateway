@@ -14,8 +14,8 @@ variables:
 #  JAVA_OPTS1: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7003"
 #  JAVA_OPTS2: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7004"
   docker_server: harbor.mrd.sohuno.com
-  image_latest: harbor.mrd.sohuno.com/smc-gateway/smc-gateway:latest
-  image_name: harbor.mrd.sohuno.com/smc-gateway/smc-gateway:$CI_BUILD_REF
+  image_latest: harbor.mrd.sohuno.com/smc/gateway:latest
+  image_name: harbor.mrd.sohuno.com/smc/gateway:$CI_BUILD_REF
 #  使用docker执行构建,如果拉取的镜像来源是私服,则需要加权限认证
 #  DOCKER_AUTH_CONFIG: "{\"auths\":{\"10.16.12.204\":{\"auth\":\"YmluZ2xvbmdsaTpMaWJpbmdsb25nMTIz\"}}}"
 cache:
