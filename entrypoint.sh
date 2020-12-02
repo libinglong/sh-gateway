@@ -3,8 +3,8 @@
 # 1.exec命令非常关键,其执行后续命令,并替代当前shell进程.由于当前进程pid为1,因此后续的java进程的pid为1.因此可以接收到ctrl+c等信号
 # 2.预处理一些操作,同时在shell环境下可以解析使用docker传入的环境变量
 set -e
-storge_dir=/opt/mrdapp/docker/gateway-preonline
-log_home=${storge_dir}/logs
+storge_dir=/opt/mrdapp/docker/${poolname}
+export log_home=${storge_dir}/logs
 mkdir -p ${log_home}
 # shellcheck disable=SC2154
 if [[ "${data_center}" == "bx" ]]

@@ -4,13 +4,11 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://ch.qos.logback/xml/ns/logback https://raw.githubusercontent.com/libinglong/logback-XSD/master/src/main/xsd/logback.xsd">
 
-    <property name="logPath" value="/opt/mrdapp/docker/gateway-preonline/logs"/>
-
     <appender name="timeRolling" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/app.log</file>
+        <file>${log_home}/app.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/app.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log_home}/app.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>15</maxHistory>
         </rollingPolicy>
 
